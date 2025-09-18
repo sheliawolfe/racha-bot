@@ -29,6 +29,7 @@ class MenuView(discord.ui.View):
 
 @bot.event
 async def on_ready():
+  bot.add_view(MenuView())
   await bot.tree.sync()
   print(f"Logged in as {bot.user}")
 
