@@ -1,5 +1,6 @@
 import discord
 import os
+import asyncio
 from discord.ext import commands
 from dotenv import load_dotenv
 from discord import CustomActivity, Activity, ActivityType, Status
@@ -28,6 +29,28 @@ class MenuView(discord.ui.View):
   @discord.ui.button(label="ping", style=discord.ui.ButtonStyle.red, cuatom_id="ping_btn")
   async def ping(self, interaction: discord.Interaction, button: discord.ui.Button):
     await interaction.response.send_message("pong")
+    
+class GlockBtn(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+    @discord.ui.button(label="pew", style=discord.ButtonStyle.danger)
+    async def pew(self, interaction: discord.Interaction, button: discord.ui.Button):
+        mag = list(range(1, 14))
+
+        await interaction.response.send_message("🔫 loading...", ephemeral=False)
+
+        while len(mag) > 1:
+            await asyncio.sleep(0.9)
+            pull = mag.pop()
+            release = mag.pop()
+            await interaction.channel.send(content=f"💥 {pull} | 💥 {release}")
+
+        if mag:
+            await asyncio.sleep(0.9)
+            await interaction.channel.send(content=f"💀 {mag.pop()}")
+
+        await asyncio.sleep(1)
+        await interaction.channel.send(content="Mag Empty!")
 
 @bot.event
 async def on_ready():
@@ -42,6 +65,11 @@ async def on_message(message):
   if message.content.lower() == "ping":
     await message.channel.send("pong")
   await bot.process_commands(message)
+
+@bot.command()
+async def reload(ctx):
+    view = GlockBtn()
+    await ctx.send("unload the blicky", view=view)
 
 @bot.command()
 async def ping(ctx):
@@ -62,6 +90,7 @@ async def clearstatus(ctx):
 async def slash_ping(interaction: discord.Interaction):
   await interaction.response.send_message("pong")
 
+"""WHY WONT TS WORK"""
 @bot.tree.command(name="menu", description="show commands")
 async def menu(interaction: discord.Interaction):
   view = MenuView()
